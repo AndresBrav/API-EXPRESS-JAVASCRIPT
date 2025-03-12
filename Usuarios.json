@@ -1,0 +1,32 @@
+[
+    {
+        "LOGIN": "USER1",
+        "CLAVE": "123",
+        "STS": "VIG",
+        "TIPO": "admin"
+    },
+    {
+        "LOGIN": "USER2",
+        "CLAVE": "456",
+        "STS": "VIG",
+        "TIPO": "user"
+    },
+    {
+        "LOGIN": "USER4",
+        "CLAVE": "789",
+        "STS": "VIG",
+        "TIPO": "user"
+    },
+    {
+        "LOGIN": "USER5",
+        "CLAVE": "1239",
+        "STS": "VIG",
+        "TIPO": "admin"
+    },
+    {
+        "LOGIN": "USER3",
+        "CLAVE": "101112",
+        "STS": "INACTIVO",
+        "TIPO": "user"
+    }
+]
