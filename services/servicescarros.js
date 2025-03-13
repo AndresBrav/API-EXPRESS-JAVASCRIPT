@@ -70,6 +70,14 @@ const guardarPdfCarros = async () => {
     // Ruta donde se guardará el PDF
     const pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
 
+    // let i = 1;
+    // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+    // while (fs.existsSync(pdfFilePath)) {
+    //     pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`); //aumentaremos un indice si ya existe
+    //     i++;
+    // }
+
+
     // Crear un nuevo documento PDF
     const doc = new PDFDocument();
     const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
@@ -116,6 +124,13 @@ const guardarPdfUnCarro = async (id) => {
 
             // Ruta donde se guardará el PDF
             const pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
+            // let i = 1;
+
+            // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+            // while (fs.existsSync(pdfFilePath)) {
+            //     pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
+            //     i++;
+            // }
 
             // Crear un nuevo documento PDF
             const doc = new PDFDocument();
