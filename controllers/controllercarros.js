@@ -1,6 +1,6 @@
 const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
-const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro,existeCarro } = require("../services/servicescarros")
+const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro,existeCarro,guardarPdfCarros,guardarPdfUnCarro,subirListaServidor,SubirCarroServidor } = require("../services/servicescarros")
 
 const getCars = async (req, res) => {
 
@@ -33,20 +33,6 @@ const getOneCars = async (req, res) => {
         //res.end();
     }
 
-
-
-
-
-    // const { id } = req.params;
-    // const unCarro = await Carro.findByPk(id);
-
-    // if (unCarro) {
-    //     res.json(unCarro);
-    // } else {
-    //     res.json({
-    //         msg: `No hay un carro con el ID ${id}`
-    //     });
-    // }
 };
 
 const delCars = async (req, res) => {
@@ -92,4 +78,25 @@ const updateCars = async (req, res) => {
     }
 };
 
-module.exports = { getCars, getOneCars, delCars, addCars, updateCars };
+const gcp = async(req,res) => {
+    await guardarPdfCarros()  //guarda el pdf en la direccion 
+    await subirListaServidor() //sube los archivos al servidor 
+
+
+    res.json({
+        msg: "llegamos hasta aqui se guardo los carros"
+    })
+    
+}
+
+const gucp = async(req,res) => {
+    const { id } = req.params
+    await guardarPdfUnCarro(id) //guarda el pdf de un carro en la direccion 
+    await SubirCarroServidor() //sube el pdf de un carro al servidor 
+
+    res.json({
+        msg: "llegamos hasta aqui verifica que se haya subido el carro"
+    })
+}
+
+module.exports = { getCars, getOneCars, delCars, addCars, updateCars,gcp,gucp };
