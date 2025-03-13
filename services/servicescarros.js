@@ -57,35 +57,88 @@ obtenerUnCarro = async (req, res) => {
 
 /***********Seccion de pdf**************/
 
+// const guardarPdfCarros = async () => {
+//     const carro = await Carro.findAll()
+//     const listaCarros = carro;
+
+//     // Crear una carpeta 'pdfs' si no existe
+//     const pdfFolderPath = path.join(__dirname, "../pdfs");
+//     if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
+//         fs.mkdirSync(pdfFolderPath); //creamos la carpeta
+//     }
+
+//     // Ruta donde se guardará el PDF
+//     const pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
+
+//     // let i = 1;
+//     // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+//     // while (fs.existsSync(pdfFilePath)) {
+//     //     pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`); //aumentaremos un indice si ya existe
+//     //     i++;
+//     // }
+
+
+//     // Crear un nuevo documento PDF
+//     const doc = new PDFDocument();
+//     const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
+//     doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
+
+//     // Título del documento
+//     doc.fontSize(20).text("Lista de Carros", { align: "center" });
+//     doc.moveDown(); //agrega un pequeño espacio
+
+//     // Agregar los carros al PDF
+//     listaCarros.forEach((carro, index) => {
+//         doc.fontSize(14).text(`${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`);
+//         doc.moveDown(0.5);
+//     });
+
+//     // Finalizar el documento
+//     doc.end();
+
+//     // Esperar a que termine de escribir el archivo
+//     writeStream.on("finish", () => {
+//         console.log("PDF guardado en:", pdfFilePath);
+//         //res.json({ msg: "PDF generado con éxito", path: pdfFilePath });
+//     });
+
+//     writeStream.on("error", (err) => {
+//         console.error("Error al guardar el PDF:", err);
+//         //res.status(500).json({ msg: "Error al generar el PDF" });
+//     });
+// }
+
 const guardarPdfCarros = async () => {
-    const carro = await Carro.findAll()
+    const carro = await Carro.findAll();
     const listaCarros = carro;
 
     // Crear una carpeta 'pdfs' si no existe
     const pdfFolderPath = path.join(__dirname, "../pdfs");
-    if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
-        fs.mkdirSync(pdfFolderPath); //creamos la carpeta
+    if (!fs.existsSync(pdfFolderPath)) {
+        fs.mkdirSync(pdfFolderPath);
     }
 
     // Ruta donde se guardará el PDF
-    const pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
+    let pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf"); 
+    let i = 1;
 
-    // let i = 1;
-    // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-    // while (fs.existsSync(pdfFilePath)) {
-    //     pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`); //aumentaremos un indice si ya existe
-    //     i++;
-    // }
+    let nombreArchivo = "lista_carros.pdf";
 
+    // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+    while (fs.existsSync(pdfFilePath)) {
+        pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`);
+        nombreArchivo = `lista_carros${i}.pdf`
+        i++;
+    }
 
     // Crear un nuevo documento PDF
     const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
-    doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
+    const writeStream = fs.createWriteStream(pdfFilePath);
+    doc.pipe(writeStream);
 
     // Título del documento
     doc.fontSize(20).text("Lista de Carros", { align: "center" });
-    doc.moveDown(); //agrega un pequeño espacio
+    doc.moveDown();
 
     // Agregar los carros al PDF
     listaCarros.forEach((carro, index) => {
@@ -99,14 +152,16 @@ const guardarPdfCarros = async () => {
     // Esperar a que termine de escribir el archivo
     writeStream.on("finish", () => {
         console.log("PDF guardado en:", pdfFilePath);
-        //res.json({ msg: "PDF generado con éxito", path: pdfFilePath });
     });
 
     writeStream.on("error", (err) => {
         console.error("Error al guardar el PDF:", err);
-        //res.status(500).json({ msg: "Error al generar el PDF" });
     });
-}
+    console.log("la iteracon es: "+i);
+    console.log(`el nombre del archivo es ${nombreArchivo}`);
+    await subirListaServidor(nombreArchivo) 
+};
+
 
 
 ///guarda el pdf en la carpeta ../pdfs/Carro.pdf
@@ -124,13 +179,13 @@ const guardarPdfUnCarro = async (id) => {
 
             // Ruta donde se guardará el PDF
             const pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
-            // let i = 1;
+            let i = 1;
 
-            // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-            // while (fs.existsSync(pdfFilePath)) {
-            //     pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
-            //     i++;
-            // }
+            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+            while (fs.existsSync(pdfFilePath)) {
+                pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
+                i++;
+            }
 
             // Crear un nuevo documento PDF
             const doc = new PDFDocument();
@@ -168,22 +223,18 @@ const guardarPdfUnCarro = async (id) => {
         console.log(error);
         //res.end();
     }
-
-    //const carro = await Carro.findByPk(id);
-
-
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async () => {
+const subirListaServidor = async (nombreArchivo) => {
     // Ruta relativa al archivo
-    const localFilePath = '../pdfs/lista_carros.pdf';
+    const localFilePath = `../pdfs/${nombreArchivo}`;
 
     // Convertir la ruta relativa a una ruta absoluta
     const absoluteFilePath = path.resolve(__dirname, localFilePath);
     console.log("la ruta absoluta es : " + absoluteFilePath);
 
-    const remoteFilePath = '/lista_carros.pdf';
+    const remoteFilePath = `/${nombreArchivo}`;
     const transferMode = 'binary';
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);

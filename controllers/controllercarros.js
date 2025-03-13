@@ -80,9 +80,7 @@ const updateCars = async (req, res) => {
 
 const gcp = async(req,res) => {
     await guardarPdfCarros()  //guarda el pdf en la direccion 
-    await subirListaServidor() //sube los archivos al servidor 
-
-
+    //await subirListaServidor() //sube los archivos al servidor 
     res.json({
         msg: "llegamos hasta aqui se guardo los carros"
     })
