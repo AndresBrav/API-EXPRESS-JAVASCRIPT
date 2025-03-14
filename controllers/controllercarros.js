@@ -79,7 +79,9 @@ const updateCars = async (req, res) => {
 };
 
 const gcp = async(req,res) => {
-    await guardarPdfCarros()  //guarda el pdf en la direccion 
+    const { body } = req;
+    console.log(body.TipoTransferencia);
+    await guardarPdfCarros(body.TipoTransferencia)  //guarda el pdf en la direccion 
     //await subirListaServidor() //sube los archivos al servidor 
     res.json({
         msg: "llegamos hasta aqui se guardo los carros"
@@ -90,7 +92,7 @@ const gcp = async(req,res) => {
 const gucp = async(req,res) => {
     const { id } = req.params
     await guardarPdfUnCarro(id) //guarda el pdf de un carro en la direccion 
-    await SubirCarroServidor() //sube el pdf de un carro al servidor 
+    //await SubirCarroServidor() //sube el pdf de un carro al servidor 
 
     res.json({
         msg: "llegamos hasta aqui verifica que se haya subido el carro"

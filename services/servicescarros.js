@@ -108,7 +108,8 @@ obtenerUnCarro = async (req, res) => {
 //     });
 // }
 
-const guardarPdfCarros = async () => {
+const guardarPdfCarros = async (TipoTransferencia) => {
+    const TipoTferencia =TipoTransferencia
     const carro = await Carro.findAll();
     const listaCarros = carro;
 
@@ -119,7 +120,7 @@ const guardarPdfCarros = async () => {
     }
 
     // Ruta donde se guardará el PDF
-    let pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf"); 
+    let pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
     let i = 1;
 
     let nombreArchivo = "lista_carros.pdf";
@@ -157,9 +158,9 @@ const guardarPdfCarros = async () => {
     writeStream.on("error", (err) => {
         console.error("Error al guardar el PDF:", err);
     });
-    console.log("la iteracon es: "+i);
+    console.log("la iteracon es: " + i);
     console.log(`el nombre del archivo es ${nombreArchivo}`);
-    await subirListaServidor(nombreArchivo) 
+    await subirListaServidor(nombreArchivo,TipoTferencia)
 };
 
 
@@ -178,12 +179,15 @@ const guardarPdfUnCarro = async (id) => {
             }
 
             // Ruta donde se guardará el PDF
-            const pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
+            let pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
             let i = 1;
+
+            let nombreArchivo = "Carro.pdf";
 
             // Verificar si el archivo ya existe y cambiar el nombre si es necesario
             while (fs.existsSync(pdfFilePath)) {
                 pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
+                nombreArchivo = `Carro${i}.pdf`
                 i++;
             }
 
@@ -214,6 +218,10 @@ const guardarPdfUnCarro = async (id) => {
                 //res.status(500).json({ msg: "Error al generar el PDF" });
             });
 
+            /************** */
+            console.log("la iteracon es: " + i);
+            console.log(`el nombre del archivo es ${nombreArchivo}`);
+            await SubirCarroServidor(nombreArchivo); ////////aqui se sube al servidor FTP
         }
         else {
             console.log("el carro que estas buscando no existe");
@@ -226,7 +234,7 @@ const guardarPdfUnCarro = async (id) => {
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async (nombreArchivo) => {
+const subirListaServidor = async (nombreArchivo,TipoTransferencia) => {
     // Ruta relativa al archivo
     const localFilePath = `../pdfs/${nombreArchivo}`;
 
@@ -235,23 +243,24 @@ const subirListaServidor = async (nombreArchivo) => {
     console.log("la ruta absoluta es : " + absoluteFilePath);
 
     const remoteFilePath = `/${nombreArchivo}`;
-    const transferMode = 'binary';
+    //const transferMode = 'binary';
+    const transferMode = TipoTransferencia;
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
     await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);
 }
 
-const SubirCarroServidor = async () => {
+const SubirCarroServidor = async (nombreArchivo) => {
 
     try {
         // Ruta relativa al archivo
-        const localFilePath = '../pdfs/Carro.pdf';
+        const localFilePath = `../pdfs/${nombreArchivo}`;
 
         // Convertir la ruta relativa a una ruta absoluta
         const absoluteFilePath = path.resolve(__dirname, localFilePath);
         console.log("la ruta absoluta es : " + absoluteFilePath);
 
-        const remoteFilePath = '/Carro.pdf';
+        const remoteFilePath = `/${nombreArchivo}`;
         const transferMode = 'binary';
 
         //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
