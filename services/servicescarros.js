@@ -7,9 +7,6 @@ const path = require('path');
 /************CRUD************ */
 const obtenerCarros = async () => {
     const carro = await Carro.findAll()
-
-    //guardarPdfCarros(carro); // llamara a generar un pdf
-    //guardarPdfCarros()
     return carro;
 }
 
@@ -34,8 +31,6 @@ const eliminarUnCarro = async (req, res) => {
 const aniadirCarro = async (req, res) => {
     const { body } = req;
     await Carro.create(body);
-
-    // return "carro agregado con exito"
     res.json({
         msg: "Carro fue agregado con éxito"
     });
@@ -44,9 +39,6 @@ const aniadirCarro = async (req, res) => {
 obtenerUnCarro = async (req, res) => {
     const { id } = req.params;
     const unCarro = await Carro.findByPk(id);
-
-    //guardarPdfUnCarro(unCarro)
-
     if (unCarro) {
         return unCarro
     } else {
@@ -161,17 +153,15 @@ const guardarPdfUnCarro = async (id,TipoTransferencia) => {
             // Esperar a que termine de escribir el archivo
             writeStream.on("finish", () => {
                 console.log("PDF guardado en:", pdfFilePath);
-                //res.json({ msg: "PDF generado con éxito", path: pdfFilePath });
             });
 
             writeStream.on("error", (err) => {
                 console.error("Error al guardar el PDF:", err);
-                //res.status(500).json({ msg: "Error al generar el PDF" });
             });
 
             /************** */
-            console.log("la iteracon es: " + i);
-            console.log(`el nombre del archivo es ${nombreArchivo}`);
+            /*console.log("la iteracon es: " + i);
+            console.log(`el nombre del archivo es ${nombreArchivo}`);*/
             await SubirCarroServidor(nombreArchivo,TipoTransferencia); ////////aqui se sube al servidor FTP
         }
         else {
@@ -224,10 +214,6 @@ const SubirCarroServidor = async (nombreArchivo,TipoTransferencia) => {
     }
 
 }
-
-
-
-
 
 
 module.exports = { obtenerCarros, eliminarUnCarro, aniadirCarro, existeCarro, obtenerUnCarro, guardarPdfCarros, guardarPdfUnCarro, subirListaServidor, SubirCarroServidor }

@@ -39,25 +39,12 @@ const delCars = async (req, res) => {
 
     await eliminarUnCarro(req, res)
 
-    // const { id } = req.params;
-    // const carro = await Carro.findByPk(id);
-    // if (carro) {
-    //     await carro.destroy();
-    // }
-    // res.json({
-    //     msg: `Se eliminó el carro con ID ${id}`
-    // });
 };
 
 const addCars = async (req, res) => {
 
     await aniadirCarro(req, res)
-    // const { body } = req;
-    // await Carro.create(body);
 
-    // res.json({
-    //     msg: "Carro fue agregado con éxito"
-    // });
 };
 
 const updateCars = async (req, res) => {
@@ -93,7 +80,7 @@ const gucp = async(req,res) => {
     const { id } = req.params
     const {TipoTransferencia}  = req.body;
     await guardarPdfUnCarro(id,TipoTransferencia) //guarda el pdf de un carro en la direccion 
-    //await SubirCarroServidor() //sube el pdf de un carro al servidor 
+    
 
     res.json({
         msg: "llegamos hasta aqui verifica que se haya subido el carro"
