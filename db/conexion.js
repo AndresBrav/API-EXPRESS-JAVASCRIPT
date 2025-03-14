@@ -1,8 +1,10 @@
 const { Sequelize } = require("sequelize");
 
-const sequelize = new Sequelize("carroscrud", "root", "", {
+
+const db = new Sequelize("carroscrud", "root", "", {
     host: "localhost",
     dialect: "mysql",
 });
 
-module.exports = sequelize;
+
+module.exports = db;
