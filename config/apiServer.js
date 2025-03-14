@@ -13,7 +13,9 @@ class ApiServer {
 
         this.authClientePath = '/api/auth';
 
-        this.carrospath='/carros';
+        this.carrospath='/carros'; //ruta para hacer consulta a los carros
+
+        this.userspath='/users'
 
         this.middlewares();
 
@@ -45,6 +47,9 @@ class ApiServer {
 
         //ruta para ir a los autos
         this.app.use(this.carrospath,require('../routes/rutascarros'))
+
+        //ruta para ir a los usuarios
+        this.app.use(this.userspath,require('../routes/rutasusers'))
 
 
         this.app.use(erroHandler);

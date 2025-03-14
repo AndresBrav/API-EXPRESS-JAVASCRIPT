@@ -36,7 +36,7 @@ const aniadirCarro = async (req, res) => {
     });
 }
 
-obtenerUnCarro = async (req, res) => {
+const obtenerUnCarro = async (req, res) => {
     const { id } = req.params;
     const unCarro = await Carro.findByPk(id);
     if (unCarro) {
