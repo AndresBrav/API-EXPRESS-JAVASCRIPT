@@ -57,56 +57,7 @@ obtenerUnCarro = async (req, res) => {
 
 /***********Seccion de pdf**************/
 
-// const guardarPdfCarros = async () => {
-//     const carro = await Carro.findAll()
-//     const listaCarros = carro;
 
-//     // Crear una carpeta 'pdfs' si no existe
-//     const pdfFolderPath = path.join(__dirname, "../pdfs");
-//     if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
-//         fs.mkdirSync(pdfFolderPath); //creamos la carpeta
-//     }
-
-//     // Ruta donde se guardará el PDF
-//     const pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
-
-//     // let i = 1;
-//     // // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-//     // while (fs.existsSync(pdfFilePath)) {
-//     //     pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`); //aumentaremos un indice si ya existe
-//     //     i++;
-//     // }
-
-
-//     // Crear un nuevo documento PDF
-//     const doc = new PDFDocument();
-//     const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
-//     doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
-
-//     // Título del documento
-//     doc.fontSize(20).text("Lista de Carros", { align: "center" });
-//     doc.moveDown(); //agrega un pequeño espacio
-
-//     // Agregar los carros al PDF
-//     listaCarros.forEach((carro, index) => {
-//         doc.fontSize(14).text(`${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`);
-//         doc.moveDown(0.5);
-//     });
-
-//     // Finalizar el documento
-//     doc.end();
-
-//     // Esperar a que termine de escribir el archivo
-//     writeStream.on("finish", () => {
-//         console.log("PDF guardado en:", pdfFilePath);
-//         //res.json({ msg: "PDF generado con éxito", path: pdfFilePath });
-//     });
-
-//     writeStream.on("error", (err) => {
-//         console.error("Error al guardar el PDF:", err);
-//         //res.status(500).json({ msg: "Error al generar el PDF" });
-//     });
-// }
 
 const guardarPdfCarros = async (TipoTransferencia) => {
     const TipoTferencia =TipoTransferencia
@@ -166,7 +117,7 @@ const guardarPdfCarros = async (TipoTransferencia) => {
 
 
 ///guarda el pdf en la carpeta ../pdfs/Carro.pdf
-const guardarPdfUnCarro = async (id) => {
+const guardarPdfUnCarro = async (id,TipoTransferencia) => {
     const carro = await Carro.findByPk(id);
     const existe = await existeCarro(id)
     console.log(`el carro existe ? ${existe}`);
@@ -221,7 +172,7 @@ const guardarPdfUnCarro = async (id) => {
             /************** */
             console.log("la iteracon es: " + i);
             console.log(`el nombre del archivo es ${nombreArchivo}`);
-            await SubirCarroServidor(nombreArchivo); ////////aqui se sube al servidor FTP
+            await SubirCarroServidor(nombreArchivo,TipoTransferencia); ////////aqui se sube al servidor FTP
         }
         else {
             console.log("el carro que estas buscando no existe");
@@ -240,17 +191,18 @@ const subirListaServidor = async (nombreArchivo,TipoTransferencia) => {
 
     // Convertir la ruta relativa a una ruta absoluta
     const absoluteFilePath = path.resolve(__dirname, localFilePath);
-    console.log("la ruta absoluta es : " + absoluteFilePath);
+    //console.log("la ruta absoluta es : " + absoluteFilePath);
 
     const remoteFilePath = `/${nombreArchivo}`;
     //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
+    console.log(`El tipo de transferencia es ${TipoTransferencia}`);
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
     await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);
 }
 
-const SubirCarroServidor = async (nombreArchivo) => {
+const SubirCarroServidor = async (nombreArchivo,TipoTransferencia) => {
 
     try {
         // Ruta relativa al archivo
@@ -258,10 +210,11 @@ const SubirCarroServidor = async (nombreArchivo) => {
 
         // Convertir la ruta relativa a una ruta absoluta
         const absoluteFilePath = path.resolve(__dirname, localFilePath);
-        console.log("la ruta absoluta es : " + absoluteFilePath);
+        //console.log("la ruta absoluta es : " + absoluteFilePath);
 
         const remoteFilePath = `/${nombreArchivo}`;
-        const transferMode = 'binary';
+        const transferMode = TipoTransferencia;
+        console.log(`El tipo de transferencia es ${TipoTransferencia}`);
 
         //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
         await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);

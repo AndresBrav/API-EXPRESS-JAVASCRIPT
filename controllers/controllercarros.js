@@ -91,7 +91,8 @@ const gcp = async(req,res) => {
 
 const gucp = async(req,res) => {
     const { id } = req.params
-    await guardarPdfUnCarro(id) //guarda el pdf de un carro en la direccion 
+    const {TipoTransferencia}  = req.body;
+    await guardarPdfUnCarro(id,TipoTransferencia) //guarda el pdf de un carro en la direccion 
     //await SubirCarroServidor() //sube el pdf de un carro al servidor 
 
     res.json({

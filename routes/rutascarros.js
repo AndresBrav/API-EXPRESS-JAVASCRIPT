@@ -23,6 +23,6 @@ rutasAutos.put('/:id',[validToken], updateCars);
 
 rutasAutos.post('/guardarPdf/lista',[validToken],gcp)
 
-rutasAutos.get('/guardarPdf/lista/:id',[validToken],gucp)
+rutasAutos.post('/guardarPdf/lista/:id',[validToken],gucp)
 
 module.exports = rutasAutos;
