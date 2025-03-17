@@ -1,20 +1,20 @@
 const express = require('express');
 
-const {validToken} = require("../middelwares/tokenValidator")
+const { validToken } = require("../middelwares/tokenValidator")
 
-const {getUsers,getOneUser,delUser,addUser,updateUser} = require('../controllers/controllerusers')
+const { getUsers, getOneUser, delUser, addUser, updateUser } = require('../controllers/controllerusers')
 
 const rutasUsuarios = express.Router();
 
-rutasUsuarios.get('/',getUsers);
+rutasUsuarios.get('/', [validToken], getUsers);
 
-rutasUsuarios.get('/:id', getOneUser);
+rutasUsuarios.get('/:id', [validToken], getOneUser);
 
-rutasUsuarios.delete('/:id',delUser);
+rutasUsuarios.delete('/:id', [validToken], delUser);
 
-rutasUsuarios.post('/', addUser);
+rutasUsuarios.post('/', [validToken], addUser);
 
-rutasUsuarios.put('/:id', updateUser);
+rutasUsuarios.put('/:id', [validToken], updateUser);
 
 
-module.exports=rutasUsuarios
+module.exports = rutasUsuarios

@@ -186,7 +186,7 @@ const subirListaServidor = async (nombreArchivo,TipoTransferencia) => {
     const remoteFilePath = `/${nombreArchivo}`;
     //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
-    console.log(`El tipo de transferencia es ${TipoTransferencia}`);
+    console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
     await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);
@@ -204,7 +204,7 @@ const SubirCarroServidor = async (nombreArchivo,TipoTransferencia) => {
 
         const remoteFilePath = `/${nombreArchivo}`;
         const transferMode = TipoTransferencia;
-        console.log(`El tipo de transferencia es ${TipoTransferencia}`);
+        console.log(`ahora.....................El tipo de transferencia es ${TipoTransferencia}`);
 
         //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
         await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);

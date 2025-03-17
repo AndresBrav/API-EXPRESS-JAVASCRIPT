@@ -43,7 +43,7 @@ Carro.belongsTo(User, {
 // })();
 // Sincroniza los modelos con la base de datos solo si no existen
 (async () => {
-    await db.sync({ alter: true });
+    await db.sync({ alter: true }); //no elimina si ya tiene datos solo hace que sincronice con el modelo
 })();
 
 module.exports = User;
