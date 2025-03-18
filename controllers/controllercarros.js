@@ -74,6 +74,16 @@ const gcp = async(req,res) => {
     
 }
 
+const CsubirServidor = async(req,res) => {
+    const {nombreArchivo,TipoTransferencia,host} = req.body
+
+    //Ejecutar la subida
+    await subirListaServidor(nombreArchivo,TipoTransferencia,host);
+    res.send({
+        msg:"se subio al servidor"
+    })
+}
+
 const gucp = async(req,res) => {
     const { id } = req.params
     const {TipoTransferencia}  = req.body;
@@ -85,4 +95,4 @@ const gucp = async(req,res) => {
     })
 }
 
-module.exports = { getCars, getOneCars, delCars, addCars, updateCars,gcp,gucp };
+module.exports = { getCars, getOneCars, delCars, addCars, updateCars,gcp,gucp,CsubirServidor };

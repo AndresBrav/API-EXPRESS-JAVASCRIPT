@@ -1,5 +1,5 @@
 const express = require('express');
-const { addCars, delCars, getCars, getOneCars, updateCars,gcp,gucp } = require('../controllers/controllercarros');
+const { addCars, delCars, getCars, getOneCars, updateCars,gcp,gucp,CsubirServidor } = require('../controllers/controllercarros');
 
 
 const {validToken} = require("../middelwares/tokenValidator")
@@ -24,5 +24,9 @@ rutasAutos.put('/:id',[validToken] ,updateCars);
 rutasAutos.post('/guardarPdf/lista',[validToken],gcp)
 
 rutasAutos.post('/guardarPdf/lista/:id',[validToken],gucp)
+
+rutasAutos.post("/guardarListaServidor",[validToken],CsubirServidor)
+
+
 
 module.exports = rutasAutos;

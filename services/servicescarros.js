@@ -129,7 +129,7 @@ const guardarPdfCarros = async (TipoTransferencia) => {
     });
     console.log("la iteracon es: " + i);
     console.log(`el nombre del archivo es ${nombreArchivo}`);
-    await subirListaServidor(nombreArchivo, TipoTferencia)
+    //await subirListaServidor(nombreArchivo, TipoTferencia)
 };
 
 
@@ -201,7 +201,7 @@ const guardarPdfUnCarro = async (id, TipoTransferencia) => {
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async (nombreArchivo, TipoTransferencia) => {
+const subirListaServidor = async (nombreArchivo, TipoTransferencia,host) => {
     // Ruta relativa al archivo
     const localFilePath = `../pdfs/${nombreArchivo}`;
 
@@ -215,7 +215,7 @@ const subirListaServidor = async (nombreArchivo, TipoTransferencia) => {
     console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);
+    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host);
 }
 
 const SubirCarroServidor = async (nombreArchivo, TipoTransferencia) => {
