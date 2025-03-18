@@ -1,6 +1,6 @@
 const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
-const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro,existeCarro,guardarPdfCarros,guardarPdfUnCarro,subirListaServidor,SubirCarroServidor } = require("../services/servicescarros")
+const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarPdfCarros, guardarPdfUnCarro, subirListaServidor, SubirCarroServidor } = require("../services/servicescarros")
 
 const getCars = async (req, res) => {
 
@@ -22,9 +22,9 @@ const getOneCars = async (req, res) => {
         if (existe) {
             res.json(carro);
         }
-        else{
+        else {
             res.json(
-                { msg: `el carro con id:${id} no existe`}
+                { msg: `el carro con id:${id} no existe` }
             )
         }
     }
@@ -48,7 +48,7 @@ const addCars = async (req, res) => {
 const updateCars = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
-    console.log("recuperado de usrt ",req.usrT);
+    console.log("recuperado de usrt ", req.usrT);
     const carro = await Carro.findByPk(id);
 
     if (carro) {
@@ -63,7 +63,7 @@ const updateCars = async (req, res) => {
     }
 };
 
-const gcp = async(req,res) => {
+const gcp = async (req, res) => {
     const { body } = req;
     console.log(body.TipoTransferencia);
     await guardarPdfCarros(body.TipoTransferencia)  //guarda el pdf en la direccion 
@@ -71,28 +71,40 @@ const gcp = async(req,res) => {
     res.json({
         msg: "llegamos hasta aqui se guardo los carros"
     })
-    
+
 }
 
-const CsubirServidor = async(req,res) => {
-    const {nombreArchivo,TipoTransferencia,host} = req.body
-
-    //Ejecutar la subida
-    await subirListaServidor(nombreArchivo,TipoTransferencia,host);
-    res.send({
-        msg:"se subio al servidor"
-    })
-}
-
-const gucp = async(req,res) => {
+const gucp = async (req, res) => {
     const { id } = req.params
-    const {TipoTransferencia}  = req.body;
-    await guardarPdfUnCarro(id,TipoTransferencia) //guarda el pdf de un carro en la direccion 
-    
+    const { TipoTransferencia } = req.body;
+    await guardarPdfUnCarro(id, TipoTransferencia) //guarda el pdf de un carro en la direccion 
+
 
     res.json({
         msg: "llegamos hasta aqui verifica que se haya subido el carro"
     })
 }
 
-module.exports = { getCars, getOneCars, delCars, addCars, updateCars,gcp,gucp,CsubirServidor };
+const CsubirServidor = async (req, res) => {
+    const { nombreArchivo, TipoTransferencia, host } = req.body
+
+    //Ejecutar la subida
+    await subirListaServidor(nombreArchivo, TipoTransferencia, host);
+    res.send({
+        msg: "se subio al servidor"
+    })
+}
+
+const CsubirUnCarroServidor = async (req, res) => {
+    const { nombreArchivo, TipoTransferencia, host } = req.body
+
+    //Ejecutar la subida
+    await SubirCarroServidor(nombreArchivo, TipoTransferencia, host);
+    res.send({
+        msg: "se subio al servidor"
+    })
+}
+
+
+
+module.exports = { getCars, getOneCars, delCars, addCars, updateCars, gcp, gucp, CsubirServidor, CsubirUnCarroServidor };
