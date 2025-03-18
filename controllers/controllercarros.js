@@ -36,9 +36,7 @@ const getOneCars = async (req, res) => {
 };
 
 const delCars = async (req, res) => {
-
     await eliminarUnCarro(req, res)
-
 };
 
 const addCars = async (req, res) => {

@@ -1,6 +1,7 @@
-const {obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario,aniadirUsuario} = require('../services/servicesusers');
+const { obtenerUsuarios, obtenerUnUsuario, existeUsuario, eliminarUnUsuario, aniadirUsuario } = require('../services/servicesusers');
 
 const User = require("../models/modeluser");
+const bcrypt = require('bcryptjs');
 
 const getUsers = async (req, res) => {
 
@@ -22,9 +23,9 @@ const getOneUser = async (req, res) => {
         if (existe) {
             res.json(user);
         }
-        else{
+        else {
             res.json(
-                { msg: `el usuario con id:${id} no existe`}
+                { msg: `el usuario con id:${id} no existe` }
             )
         }
     }
@@ -51,12 +52,20 @@ const addUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { body } = req;
+
+    //const { body } = req;
+    const { login, clave, sts, tipo } = req.body;
+    const claveencriptada = bcrypt.hashSync(clave, 10);
 
     const carro = await User.findByPk(id);
 
     if (carro) {
-        await carro.update(body);
+        await carro.update({
+            login: login,
+            clave: claveencriptada,  // Clave encriptada
+            sts: sts,
+            tipo: tipo
+        });
         res.json({
             msg: "El usuario  fue actualizado con éxito"
         });
@@ -67,4 +76,4 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = {getUsers,getOneUser,delUser,addUser,updateUser}
+module.exports = { getUsers, getOneUser, delUser, addUser, updateUser }
