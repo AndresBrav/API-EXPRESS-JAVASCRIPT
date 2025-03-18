@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 
-const newJWT = (u, t, tiempo='1h') => {
+const newJWT = (u, t, tiempo='3h') => {
 
     const payload =  {u, t};
     return new Promise ((resolve, reject) => {
