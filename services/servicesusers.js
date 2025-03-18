@@ -1,4 +1,5 @@
 const User = require("../models/modeluser");
+const bcrypt = require('bcryptjs');
 
 /************CRUD************ */
 const obtenerUsuarios = async () => {
@@ -33,11 +34,24 @@ const eliminarUnUsuario = async (req, res) => {
 }
 
 const aniadirUsuario = async (req, res) => {
-    const { body } = req;
-    await User.create(body);
+
+    //const { body } = req;
+    //await User.create(body);
+    const { login, clave, sts, tipo } = req.body;
+    // Hashear la clave antes de guardarla
+    const claveencriptada = bcrypt.hashSync(clave, 10);
+
+    // Crear usuario con clave hasheada
+    const nuevoUsuario = await User.create({
+        login: login,
+        clave: claveencriptada,  // Clave encriptada
+        sts: sts,
+        tipo: tipo
+    });
     res.json({
-        msg: "Usuario fue agregado con éxito"
+        msg: "Usuario fue agregado con éxito",
+        usuario: nuevoUsuario
     });
 }
 
-module.exports ={obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario,aniadirUsuario}
+module.exports = { obtenerUsuarios, obtenerUnUsuario, existeUsuario, eliminarUnUsuario, aniadirUsuario }

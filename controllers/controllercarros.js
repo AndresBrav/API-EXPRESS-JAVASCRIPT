@@ -50,7 +50,7 @@ const addCars = async (req, res) => {
 const updateCars = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
-
+    console.log("recuperado de usert ",req.usrT);
     const carro = await Carro.findByPk(id);
 
     if (carro) {

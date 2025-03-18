@@ -19,7 +19,7 @@ rutasAutos.delete('/:id',[validToken], delCars);
 
 rutasAutos.post('/',[validToken], addCars);
 
-rutasAutos.put('/:id',[validToken], updateCars);
+rutasAutos.put('/:id',[validToken] ,updateCars);
 
 rutasAutos.post('/guardarPdf/lista',[validToken],gcp)
 

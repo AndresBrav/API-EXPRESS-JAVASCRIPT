@@ -7,10 +7,12 @@ const { password } = require('../config/db');
 
 const loginUser = async (data) => {
   try {
+    console.log("lo que trae dato es"+data.usuario.toUpperCase()); //come from postman USER4
+    
     //*************- Llamar al modelo de base de datos *************//
     const result = await authUser.loginUser(data.usuario.toUpperCase());
 
-    console.log("Resultado de loginUser:", result);
+    console.log("Resultado de loginUser es:", result);
 
     //**************/ Realizar lógica de negocio adicional sobre la informacion devuelta *************//
     if (result.rows.length == 1) {

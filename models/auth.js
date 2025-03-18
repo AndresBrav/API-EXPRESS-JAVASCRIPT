@@ -1,6 +1,8 @@
 const fs = require('fs');
 // const oracledb = require('oracledb');
 const { configdb } = require('../config/db.js');
+const User = require("../models/modeluser.js");
+
 
 const bcryptjs = require("bcryptjs");
 
@@ -46,13 +48,32 @@ try {
 
 const loginUser = async function (usr) {
 
-  console.log("Buscando usuario:", usr); //USER1
+  //console.log("Buscando usuario:", usr); //USER4
 
   // Busca el usuario en el arreglo simulado
   const user = usersDB.find(user => user.LOGIN === usr);
+  console.log("el resultado de user es " + user);
+
+  const user1 = await User.findOne({
+    where: { login: usr },
+    attributes: ["login", "clave", "sts", "tipo"],
+    raw: true  // <- Esto hace que devuelva un objeto simple 
+  });
+
+  console.log("El usuario que traigo de la base de datos  es ", user1);
 
   // Simulando la respuesta de  con `rows`
-  return { rows: user ? [user] : [] };
+  //return { rows: user1 ? [user1] : [] };
+  //return { rows: user ? [user] : [] };
+  
+  //Para retornar en el formato correcto 
+  return { 
+    rows: user1 ? [Object.fromEntries(
+      Object.entries(user1).map(([key, value]) => [key.toUpperCase(), value])
+    )] : [] 
+  };
+
+
 
   // let connection, binds, options, result, sql;
 

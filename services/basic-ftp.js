@@ -7,7 +7,7 @@ async function uploadFileToFTP(localFilePath, remoteFilePath, transferMode = 'bi
     try {
         // Ajusta la IP/host y el puerto según tu configuración
         await client.access({
-            host: "192.168.56.1",  // o la IP/dominio de tu servidor
+            host: "127.0.0.1",  // o la IP/dominio de tu servidor
             user: "ftpuser",
             password: "123",
             secure: true,          // Activa TLS

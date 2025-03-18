@@ -18,8 +18,8 @@
         "TIPO": "user"
     },
     {
-        "LOGIN": "USER5",
-        "CLAVE": "1239",
+        "LOGIN": "user",
+        "CLAVE": "789",
         "STS": "VIG",
         "TIPO": "admin"
     },
