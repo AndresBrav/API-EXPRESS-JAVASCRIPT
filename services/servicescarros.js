@@ -3,6 +3,7 @@ const PDFDocument = require("pdfkit");   //biblioteca para guardar pdf
 const fs = require("fs");
 const uploadFileToFTP = require('./basic-ftp') //metodo para subir al servidor
 const path = require('path');
+const User = require('../models/modeluser')
 
 /************CRUD************ */
 const obtenerCarros = async () => {
@@ -29,10 +30,35 @@ const eliminarUnCarro = async (req, res) => {
 }
 
 const aniadirCarro = async (req, res) => {
-    const { body } = req;
-    await Carro.create(body);
+
+    const { nombre, descripcion, precio, stock } = req.body
+
+    console.log("recuperado de usrt ", req.usrT.u);
+
+    const loginusuario = req.usrT.u  //con el que inicio sesion
+    // const { body } = req.body;
+    const idUsuario = await User.findOne({
+        where: { login: loginusuario },
+        attributes: ["id"],
+        raw: true  // <- Esto hace que devuelva un objeto simple 
+    });
+
+    // Extraer solo el ID
+    const userId = idUsuario ? idUsuario.id : null;
+
+    console.log("el id del usuario es "+userId);
+
+    const nuevoAuto = await Carro.create({
+        nombre: nombre,
+        descripcion: descripcion,  // Clave encriptada
+        precio: precio,
+        stock: stock,
+        user_id:userId
+    });
+
     res.json({
-        msg: "Carro fue agregado con éxito"
+        msg: "Carro fue agregado con éxito",
+        nuevoAuto
     });
 }
 
@@ -52,7 +78,7 @@ const obtenerUnCarro = async (req, res) => {
 
 
 const guardarPdfCarros = async (TipoTransferencia) => {
-    const TipoTferencia =TipoTransferencia
+    const TipoTferencia = TipoTransferencia
     const carro = await Carro.findAll();
     const listaCarros = carro;
 
@@ -103,13 +129,13 @@ const guardarPdfCarros = async (TipoTransferencia) => {
     });
     console.log("la iteracon es: " + i);
     console.log(`el nombre del archivo es ${nombreArchivo}`);
-    await subirListaServidor(nombreArchivo,TipoTferencia)
+    await subirListaServidor(nombreArchivo, TipoTferencia)
 };
 
 
 
 ///guarda el pdf en la carpeta ../pdfs/Carro.pdf
-const guardarPdfUnCarro = async (id,TipoTransferencia) => {
+const guardarPdfUnCarro = async (id, TipoTransferencia) => {
     const carro = await Carro.findByPk(id);
     const existe = await existeCarro(id)
     console.log(`el carro existe ? ${existe}`);
@@ -162,7 +188,7 @@ const guardarPdfUnCarro = async (id,TipoTransferencia) => {
             /************** */
             /*console.log("la iteracon es: " + i);
             console.log(`el nombre del archivo es ${nombreArchivo}`);*/
-            await SubirCarroServidor(nombreArchivo,TipoTransferencia); ////////aqui se sube al servidor FTP
+            await SubirCarroServidor(nombreArchivo, TipoTransferencia); ////////aqui se sube al servidor FTP
         }
         else {
             console.log("el carro que estas buscando no existe");
@@ -175,7 +201,7 @@ const guardarPdfUnCarro = async (id,TipoTransferencia) => {
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async (nombreArchivo,TipoTransferencia) => {
+const subirListaServidor = async (nombreArchivo, TipoTransferencia) => {
     // Ruta relativa al archivo
     const localFilePath = `../pdfs/${nombreArchivo}`;
 
@@ -192,7 +218,7 @@ const subirListaServidor = async (nombreArchivo,TipoTransferencia) => {
     await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode);
 }
 
-const SubirCarroServidor = async (nombreArchivo,TipoTransferencia) => {
+const SubirCarroServidor = async (nombreArchivo, TipoTransferencia) => {
 
     try {
         // Ruta relativa al archivo

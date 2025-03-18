@@ -16,9 +16,7 @@ const validToken = (req = request, res = response, next) => {
     {
         const newError = new resError(respCode.UNAUTHORIZED, respPhrase.UNAUTHORIZED.tokenValidator1, null);
         return res.status(newError.statuscode).json(newError.response()).end()            
-    }
-
-    
+    }    
 }
 
 
