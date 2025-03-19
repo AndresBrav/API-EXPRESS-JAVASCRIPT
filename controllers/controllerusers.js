@@ -3,7 +3,7 @@ const { obtenerUsuarios, obtenerUnUsuario, existeUsuario, eliminarUnUsuario, ani
 const User = require("../models/modeluser");
 const bcrypt = require('bcryptjs');
 
-const getUsers = async (req, res) => {
+const CobtenerUsuarios = async (req, res) => {
 
     /*const listaCarros = await Carro.findAll();*/
     const listaUsuarios = await obtenerUsuarios()
@@ -11,7 +11,7 @@ const getUsers = async (req, res) => {
     res.send(listaUsuarios);
 };
 
-const getOneUser = async (req, res) => {
+const CobtenerUnUsuario = async (req, res) => {
     // const data = req.body
     const { id } = req.params
 
@@ -37,20 +37,20 @@ const getOneUser = async (req, res) => {
 };
 
 
-const delUser = async (req, res) => {
+const CeliminarUnUsuario = async (req, res) => {
 
     await eliminarUnUsuario(req, res)
 
 };
 
-const addUser = async (req, res) => {
+const CaniadirUsuario = async (req, res) => {
 
     await aniadirUsuario(req, res)
 
 };
 
 
-const updateUser = async (req, res) => {
+const CactualizarUnUsuario = async (req, res) => {
     const { id } = req.params;
 
     //const { body } = req;
@@ -76,4 +76,5 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, getOneUser, delUser, addUser, updateUser }
+module.exports = { CobtenerUsuarios, CobtenerUnUsuario, CaniadirUsuario,
+    CeliminarUnUsuario, CactualizarUnUsuario }
