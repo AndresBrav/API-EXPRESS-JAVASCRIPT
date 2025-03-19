@@ -2,7 +2,7 @@ const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
 const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarPdfCarros, guardarPdfUnCarro, subirListaServidor, SubirCarroServidor } = require("../services/servicescarros")
 
-const getCars = async (req, res) => {
+const Cobtenercarros = async (req, res) => {
 
     /*const listaCarros = await Carro.findAll();*/
     const listaCarros = await obtenerCarros()
@@ -10,7 +10,7 @@ const getCars = async (req, res) => {
     res.send(listaCarros);
 };
 
-const getOneCars = async (req, res) => {
+const Cobteneruncarro = async (req, res) => {
     // const data = req.body
     const { id } = req.params
 
@@ -35,17 +35,17 @@ const getOneCars = async (req, res) => {
 
 };
 
-const delCars = async (req, res) => {
+const CeliminarCarro = async (req, res) => {
     await eliminarUnCarro(req, res)
 };
 
-const addCars = async (req, res) => {
+const CaniadirCarro = async (req, res) => {
 
     await aniadirCarro(req, res)
 
 };
 
-const updateCars = async (req, res) => {
+const CactualizarCarro = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
     console.log("recuperado de usrt ", req.usrT);
@@ -107,4 +107,4 @@ const CsubirUnCarroServidor = async (req, res) => {
 
 
 
-module.exports = { getCars, getOneCars, delCars, addCars, updateCars, gcp, gucp, CsubirServidor, CsubirUnCarroServidor };
+module.exports = { Cobtenercarros, Cobteneruncarro,CeliminarCarro,CaniadirCarro, CactualizarCarro, gcp, gucp, CsubirServidor, CsubirUnCarroServidor };

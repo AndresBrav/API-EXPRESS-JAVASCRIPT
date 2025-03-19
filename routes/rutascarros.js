@@ -1,5 +1,5 @@
 const express = require('express');
-const { addCars, delCars, getCars, getOneCars, updateCars,gcp,gucp,CsubirServidor,CsubirUnCarroServidor } = require('../controllers/controllercarros');
+const { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,gcp,gucp,CsubirServidor,CsubirUnCarroServidor } = require('../controllers/controllercarros');
 
 
 const {validToken} = require("../middelwares/tokenValidator")
@@ -10,16 +10,16 @@ const rutasAutos = express.Router();
 //     console.log("vamos a probar las rutas de los autos");
 // })
 
-rutasAutos.get('/', [validToken],getCars);
+rutasAutos.get('/', [validToken],Cobtenercarros);
 //rutasAutos.get('/', [validToken],guardarCarrosPdf);
 
-rutasAutos.get('/:id',[validToken], getOneCars);
+rutasAutos.get('/:id',[validToken], Cobteneruncarro);
 
-rutasAutos.delete('/:id',[validToken], delCars);
+rutasAutos.delete('/:id',[validToken], CeliminarCarro);
 
-rutasAutos.post('/',[validToken], addCars);
+rutasAutos.post('/',[validToken], CaniadirCarro);
 
-rutasAutos.put('/:id',[validToken] ,updateCars);
+rutasAutos.put('/:id',[validToken] ,CactualizarCarro);
 
 rutasAutos.post('/guardarPdf/lista',[validToken],gcp)
 
