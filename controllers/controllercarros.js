@@ -5,7 +5,7 @@ const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarr
 const Cobtenercarros = async (req, res) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaCarros = await obtenerCarros()
+    const listaCarros = await obtenerCarros(req,res)
 
     res.send(listaCarros);
 };
@@ -49,6 +49,7 @@ const CactualizarCarro = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
     console.log("recuperado de usrt ", req.usrT);
+    console.log("recuperado de usrt ", req.usrT.u);
     const carro = await Carro.findByPk(id);
 
     if (carro) {

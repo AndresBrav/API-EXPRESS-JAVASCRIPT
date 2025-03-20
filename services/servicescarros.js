@@ -6,9 +6,23 @@ const path = require('path');
 const User = require('../models/modeluser')
 
 /************CRUD************ */
-const obtenerCarros = async () => {
-    const carro = await Carro.findAll()
-    return carro;
+const obtenerCarros = async (req,res) => {
+    const loginUsuario = req.usrT.u
+    console.log("recuperado de usrt ", req.usrT.u);
+
+    // Obtener el ID del usuario a partir de su nombre
+    const usuario = await User.findOne({ where: { login: loginUsuario } });
+    //console.log("El usuario que vino es:", JSON.stringify(usuario, null, 2));
+    const idUsuario = usuario.id;
+    console.log("el id del usuario es "+idUsuario);
+
+
+    /*****Retornar carros  */
+    // Obtener los carros asociados a ese usuario
+    const carros = await Carro.findAll({ where: { user_id:idUsuario } });
+
+    //const carro = await Carro.findAll()
+    return carros;
 }
 
 const existeCarro = async (id) => {
