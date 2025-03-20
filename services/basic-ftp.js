@@ -1,6 +1,6 @@
 const ftp = require('basic-ftp');
 
-async function uploadFileToFTP(localFilePath, remoteFilePath, transferMode = 'binary',host ='127.0.0.1') {
+async function uploadFileToFTP(localFilePath, remoteFilePath, transferMode = 'binary',host,user ="null",password="null") {
     const client = new ftp.Client();
     client.ftp.verbose = true; // Opcional: logs detallados
     console.log(`el tipo de transferencia que se esta haciendo es ${transferMode}`);
@@ -8,8 +8,10 @@ async function uploadFileToFTP(localFilePath, remoteFilePath, transferMode = 'bi
         // Ajusta la IP/host y el puerto según tu configuración
         await client.access({
             host: host,  // o la IP/dominio de tu servidor
-            user: "ftpuser",
-            password: "123",
+            // user: "ftpuser",
+            // password: "123",
+            user:user,
+            password:password,
             secure: true,          // Activa TLS
             port: 21,              // O 990 si usas FTPS implícito
             secureOptions: {

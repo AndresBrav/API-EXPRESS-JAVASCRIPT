@@ -201,7 +201,7 @@ const guardarPdfUnCarro = async (id, TipoTransferencia) => {
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async (nombreArchivo, TipoTransferencia,host) => {
+const subirListaServidor = async (nombreArchivo, TipoTransferencia,host,user,password) => {
     // Ruta relativa al archivo
     const localFilePath = `../pdfs/${nombreArchivo}`;
 
@@ -215,10 +215,10 @@ const subirListaServidor = async (nombreArchivo, TipoTransferencia,host) => {
     console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host);
+    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host,user,password);
 }
 
-const SubirCarroServidor = async (nombreArchivo, TipoTransferencia,host) => {
+const SubirCarroServidor = async (nombreArchivo, TipoTransferencia,host,user,password) => {
 
     try {
         // Ruta relativa al archivo
@@ -233,7 +233,7 @@ const SubirCarroServidor = async (nombreArchivo, TipoTransferencia,host) => {
         console.log(`ahora.....................El tipo de transferencia es ${TipoTransferencia}`);
 
         //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host);
+        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host,user,password);
     }
     catch (error) {
         console.log("no existe el carro en el directorio");

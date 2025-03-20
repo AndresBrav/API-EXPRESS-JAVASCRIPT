@@ -86,20 +86,20 @@ const gucp = async (req, res) => {
 }
 
 const CsubirServidor = async (req, res) => {
-    const { nombreArchivo, TipoTransferencia, host } = req.body
+    const { nombreArchivo, TipoTransferencia, host,user,password } = req.body
 
     //Ejecutar la subida
-    await subirListaServidor(nombreArchivo, TipoTransferencia, host);
+    await subirListaServidor(nombreArchivo, TipoTransferencia, host,user,password);
     res.send({
         msg: "se subio al servidor"
     })
 }
 
 const CsubirUnCarroServidor = async (req, res) => {
-    const { nombreArchivo, TipoTransferencia, host } = req.body
+    const { nombreArchivo, TipoTransferencia, host,user,password } = req.body
 
     //Ejecutar la subida
-    await SubirCarroServidor(nombreArchivo, TipoTransferencia, host);
+    await SubirCarroServidor(nombreArchivo, TipoTransferencia, host,user,password);
     res.send({
         msg: "se subio al servidor"
     })
