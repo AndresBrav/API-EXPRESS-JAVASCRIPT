@@ -68,8 +68,8 @@ const CactualizarCarro = async (req, res) => {
         include: User
     });
 
-    //console.log("El carro que se actualizó es:");
-    //console.log(JSON.stringify(relacionCarroUsuario, null, 2));
+    console.log("El carro que se actualizó es:");
+    console.log(JSON.stringify(relacionCarroUsuario, null, 2));
 
     /******Guardamos sus id en un Arreglo */
     const idsCarros = [];
