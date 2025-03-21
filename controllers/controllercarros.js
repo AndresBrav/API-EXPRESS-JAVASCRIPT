@@ -1,11 +1,13 @@
 const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
-const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarPdfCarros, guardarPdfUnCarro, subirListaServidor, SubirCarroServidor } = require("../services/servicescarros")
+const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarPdfCarros, guardarPdfUnCarro, subirListaServidor, SubirCarroServidor } = require("../services/servicescarros");
+const User = require("../models/modeluser");
+const { flushPages } = require("pdfkit");
 
 const Cobtenercarros = async (req, res) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaCarros = await obtenerCarros(req,res)
+    const listaCarros = await obtenerCarros(req, res)
 
     res.send(listaCarros);
 };
@@ -48,12 +50,48 @@ const CaniadirCarro = async (req, res) => {
 const CactualizarCarro = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
-    console.log("recuperado de usrt ", req.usrT);
-    console.log("recuperado de usrt ", req.usrT.u);
+    // console.log("recuperado de usrt ", req.usrT);
+    // console.log("recuperado de usrt ", req.usrT.u);
+
+    /********* Obtenemos el id del usuario****** */
+    const usuarioaux = await User.findOne({
+        where: { login: req.usrT.u },
+        raw: true
+    })
+
+    //console.log("el usuario que traje es");
+    //console.log(usuarioaux);
+
+    /**********Obtenemos la relacion ************* */
+    const relacionCarroUsuario = await Carro.findAll({
+        where: { user_id: usuarioaux.id },
+        include: User
+    });
+
+    //console.log("El carro que se actualizó es:");
+    //console.log(JSON.stringify(relacionCarroUsuario, null, 2));
+
+    /******Guardamos sus id en un Arreglo */
+    const idsCarros = [];
+    relacionCarroUsuario.forEach(carro => {
+        idsCarros.push(carro.id);
+    });
+
+    console.log("IDs de los carros:", idsCarros);
+
+    let existeValor = idsCarros.includes(Number(id));
+    console.log(id);
+    console.log("El valor existe:", existeValor);
+
+    // console.log("IDs de los carros:", idsCarros);
+    // console.log("Tipos de datos en el array:", idsCarros.map(num => typeof num));
+    // console.log("Tipo de id:", typeof id);
+
+
     const carro = await Carro.findByPk(id);
 
-    if (carro) {
-        await carro.update(body);
+    if (carro && existeValor) {
+        await carro.update(body);  //puedes enviar un solo dato {"nombre": "vw actualizado"}
         res.json({
             msg: "El producto fue actualizado con éxito"
         });
@@ -87,20 +125,20 @@ const gucp = async (req, res) => {
 }
 
 const CsubirServidor = async (req, res) => {
-    const { nombreArchivo, TipoTransferencia, host,user,password } = req.body
+    const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
 
     //Ejecutar la subida
-    await subirListaServidor(nombreArchivo, TipoTransferencia, host,user,password);
+    await subirListaServidor(nombreArchivo, TipoTransferencia, host, user, password);
     res.send({
         msg: "se subio al servidor"
     })
 }
 
 const CsubirUnCarroServidor = async (req, res) => {
-    const { nombreArchivo, TipoTransferencia, host,user,password } = req.body
+    const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
 
     //Ejecutar la subida
-    await SubirCarroServidor(nombreArchivo, TipoTransferencia, host,user,password);
+    await SubirCarroServidor(nombreArchivo, TipoTransferencia, host, user, password);
     res.send({
         msg: "se subio al servidor"
     })
@@ -108,4 +146,4 @@ const CsubirUnCarroServidor = async (req, res) => {
 
 
 
-module.exports = { Cobtenercarros, Cobteneruncarro,CeliminarCarro,CaniadirCarro, CactualizarCarro, gcp, gucp, CsubirServidor, CsubirUnCarroServidor };
+module.exports = { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, gcp, gucp, CsubirServidor, CsubirUnCarroServidor };
