@@ -6,7 +6,7 @@ const path = require('path');
 const User = require('../models/modeluser')
 
 /************CRUD************ */
-const obtenerCarros = async (req,res) => {
+const obtenerCarros = async (req, res) => {
     const loginUsuario = req.usrT.u
     console.log("recuperado de usrt ", req.usrT.u);
 
@@ -14,12 +14,12 @@ const obtenerCarros = async (req,res) => {
     const usuario = await User.findOne({ where: { login: loginUsuario } });
     //console.log("El usuario que vino es:", JSON.stringify(usuario, null, 2));
     const idUsuario = usuario.id;
-    console.log("el id del usuario es "+idUsuario);
+    console.log("el id del usuario es " + idUsuario);
 
 
     /*****Retornar carros  */
     // Obtener los carros asociados a ese usuario
-    const carros = await Carro.findAll({ where: { user_id:idUsuario } });
+    const carros = await Carro.findAll({ where: { user_id: idUsuario } });
 
     //const carro = await Carro.findAll()
     return carros;
@@ -60,14 +60,14 @@ const aniadirCarro = async (req, res) => {
     // Extraer solo el ID
     const userId = idUsuario ? idUsuario.id : null;
 
-    console.log("el id del usuario es "+userId);
+    console.log("el id del usuario es " + userId);
 
     const nuevoAuto = await Carro.create({
         nombre: nombre,
         descripcion: descripcion,  // Clave encriptada
         precio: precio,
         stock: stock,
-        user_id:userId
+        user_id: userId
     });
 
     res.json({
@@ -91,10 +91,22 @@ const obtenerUnCarro = async (req, res) => {
 
 
 
-const guardarPdfCarros = async (TipoTransferencia) => {
+const guardarPdfCarros = async (TipoTransferencia,loginUsuario) => {
     const TipoTferencia = TipoTransferencia
-    const carro = await Carro.findAll();
-    const listaCarros = carro;
+
+    
+
+    // Obtener el ID del usuario a partir de su nombre
+    const usuario = await User.findOne({ where: { login: loginUsuario } });
+    //console.log("El usuario que vino es:", JSON.stringify(usuario, null, 2));
+    const idUsuario = usuario.id;
+    console.log("el id del usuario es " + idUsuario);
+    /*****Retornar carros  */
+    // Obtener los carros asociados a ese usuario
+    const carros = await Carro.findAll({ where: { user_id: idUsuario } });
+
+    //const carro = await Carro.findAll();
+    const listaCarros = carros;
 
     // Crear una carpeta 'pdfs' si no existe
     const pdfFolderPath = path.join(__dirname, "../pdfs");
@@ -215,7 +227,7 @@ const guardarPdfUnCarro = async (id, TipoTransferencia) => {
 }
 
 /*************Subir al servidor ********* */
-const subirListaServidor = async (nombreArchivo, TipoTransferencia,host,user,password) => {
+const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
     // Ruta relativa al archivo
     const localFilePath = `../pdfs/${nombreArchivo}`;
 
@@ -229,10 +241,10 @@ const subirListaServidor = async (nombreArchivo, TipoTransferencia,host,user,pas
     console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
 
     //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host,user,password);
+    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
 }
 
-const SubirCarroServidor = async (nombreArchivo, TipoTransferencia,host,user,password) => {
+const SubirCarroServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
 
     try {
         // Ruta relativa al archivo
@@ -247,7 +259,7 @@ const SubirCarroServidor = async (nombreArchivo, TipoTransferencia,host,user,pas
         console.log(`ahora.....................El tipo de transferencia es ${TipoTransferencia}`);
 
         //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode,host,user,password);
+        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
     }
     catch (error) {
         console.log("no existe el carro en el directorio");

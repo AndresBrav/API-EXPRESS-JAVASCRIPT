@@ -104,8 +104,9 @@ const CactualizarCarro = async (req, res) => {
 
 const gcp = async (req, res) => {
     const { body } = req;
+    const loginUsuario = req.usrT.u
     console.log(body.TipoTransferencia);
-    await guardarPdfCarros(body.TipoTransferencia)  //guarda el pdf en la direccion 
+    await guardarPdfCarros(body.TipoTransferencia,loginUsuario)  //guarda el pdf en la direccion 
     //await subirListaServidor() //sube los archivos al servidor 
     res.json({
         msg: "llegamos hasta aqui se guardo los carros"
