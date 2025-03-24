@@ -23,9 +23,28 @@ const aniadirUsuario = async (req, res) => {
     });
 }
 
-const obtenerUsuarios = async () => {
-    const user = await User.findAll()
-    return user;
+const obtenerUsuarios = async (req) => {
+
+    const loginusuario = req.usrT.u  //con el que inicio sesion
+
+    const tipo = await User.findOne({
+        where: { login: loginusuario },
+        attributes: ["tipo"],
+        raw: true  // Esto hace que devuelva un objeto simple 
+    });
+
+    if(tipo.tipo == "admin"){
+
+        const user = await User.findAll()
+        return user;
+    }
+    else{
+        const user = "No tiene permisos para ver los usuarios"
+        return user;
+    }
+
+    // const user = await User.findAll()
+    // return user;
 }
 
 const obtenerUnUsuario = async (req, res) => {

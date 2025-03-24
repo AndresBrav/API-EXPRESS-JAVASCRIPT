@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const CobtenerUsuarios = async (req, res) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaUsuarios = await obtenerUsuarios()
+    const listaUsuarios = await obtenerUsuarios(req)
 
     res.send(listaUsuarios);
 };

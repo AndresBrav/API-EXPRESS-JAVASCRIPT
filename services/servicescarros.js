@@ -47,7 +47,7 @@ const aniadirCarro = async (req, res) => {
 
     const { nombre, descripcion, precio, stock } = req.body
 
-    console.log("recuperado de usrt ", req.usrT.u);
+    //console.log("recuperado de usrt ", req.usrT.u);
 
     const loginusuario = req.usrT.u  //con el que inicio sesion
     // const { body } = req.body;
@@ -93,8 +93,6 @@ const obtenerUnCarro = async (req, res) => {
 
 const guardarPdfCarros = async (TipoTransferencia,loginUsuario) => {
     const TipoTferencia = TipoTransferencia
-
-    
 
     // Obtener el ID del usuario a partir de su nombre
     const usuario = await User.findOne({ where: { login: loginUsuario } });
