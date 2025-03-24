@@ -1,5 +1,5 @@
 const express = require('express');
-const { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,gcp,gucp,CsubirServidor,CsubirUnCarroServidor } = require('../controllers/controllercarros');
+const { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor } = require('../controllers/controllercarros');
 
 
 const {validToken} = require("../middelwares/tokenValidator")
@@ -21,13 +21,13 @@ rutasAutos.post('/',[validToken], CaniadirCarro);
 
 rutasAutos.put('/:id',[validToken] ,CactualizarCarro);
 
-rutasAutos.post('/guardarPdf/lista',[validToken],gcp)
+rutasAutos.post('/guardarPdf/lista',[validToken],CguardarArchivo)
 
-rutasAutos.post('/guardarPdf/lista/:id',[validToken],gucp)
+rutasAutos.post('/guardarPdf/lista/:id',[validToken],CguardarUnArchivo)
 
 rutasAutos.post("/guardarListaServidor",[validToken],CsubirServidor)
 
-rutasAutos.post("/guardarUnCarroServidor",[validToken],CsubirUnCarroServidor)
+// rutasAutos.post("/guardarUnCarroServidor",[validToken],CsubirUnCarroServidor)
 
 
 
