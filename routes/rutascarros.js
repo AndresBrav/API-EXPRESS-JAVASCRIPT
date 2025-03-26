@@ -1,5 +1,5 @@
 const express = require('express');
-const { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor } = require('../controllers/controllercarros');
+const { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64,CconvertirBase64toFile } = require('../controllers/controllercarros');
 
 
 const {validToken} = require("../middelwares/tokenValidator")
@@ -26,6 +26,10 @@ rutasAutos.post('/guardarPdf/lista',[validToken],CguardarArchivo)
 rutasAutos.post('/guardarPdf/lista/:id',[validToken],CguardarUnArchivo)
 
 rutasAutos.post("/guardarListaServidor",[validToken],CsubirServidor)
+
+rutasAutos.post("/ArchivoBase64",[validToken],CdevolverArchivoBase64)
+
+rutasAutos.post("/ConvertirBase64toFile",[validToken],CconvertirBase64toFile)
 
 // rutasAutos.post("/guardarUnCarroServidor",[validToken],CsubirUnCarroServidor)
 

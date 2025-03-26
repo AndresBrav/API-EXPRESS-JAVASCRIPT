@@ -242,137 +242,6 @@ const guardarArchivoUnCarro = async (id, tipoGuardado) => {
 };
 
 
-
-
-
-// const guardarArchivoUnCarro = async (id, TipoTransferencia, tipoGuardado) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             console.log("el tipo de guardado es: " + tipoGuardado);
-//             const carro = await Carro.findByPk(id);
-//             const existe = await existeCarro(id)
-//             //console.log(`el carro existe ? ${existe}`);
-
-//             if (tipoGuardado === "pdf") {
-//                 try {
-
-//                     let nombreDelArchivo = "";
-
-//                     if (existe) {
-//                         // Crear una carpeta 'pdfs' si no existe
-//                         const pdfFolderPath = path.join(__dirname, "../ArchivosGuardados");
-//                         if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
-//                             fs.mkdirSync(pdfFolderPath); //creamos la carpeta
-//                         }
-
-//                         // Ruta donde se guardará el PDF
-//                         let pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
-//                         let i = 1;
-
-//                         let nombreArchivo = "Carro.pdf";
-
-//                         // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-//                         while (fs.existsSync(pdfFilePath)) {
-//                             pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
-//                             nombreArchivo = `Carro${i}.pdf`
-//                             i++;
-//                         }
-
-//                         // Crear un nuevo documento PDF
-//                         const doc = new PDFDocument();
-//                         const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
-//                         doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
-
-//                         // Título del documento
-//                         doc.fontSize(20).text("Detalles del Carro", { align: "center" });
-//                         doc.moveDown(); //agrega un pequeño espacio
-
-//                         //agregar carro al pdf
-//                         doc.fontSize(14).text(`ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`)
-
-
-//                         // Finalizar el documento
-//                         doc.end();
-
-
-//                         // Esperar a que termine de escribir el archivo
-//                         writeStream.on("finish", async() => {
-//                             console.log("PDF guardado en:", pdfFilePath);
-//                             nombreDelArchivo = nombreArchivo;
-//                             const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
-//                             console.log("el nombre del archivo es: " + nombreDelArchivo);
-//                             resolve(variableBase64);
-//                         });
-
-//                         writeStream.on("error", (err) => {
-//                             console.error("Error al guardar el PDF:", err);
-//                         });
-
-
-//                     }
-//                     else {
-//                         console.log("el carro que estas buscando no existe");
-//                     }
-//                 }
-//                 catch (error) {
-//                     console.log(error);
-//                     //res.end();
-//                 }
-//             }
-//             else {
-//                 if (tipoGuardado === "txt") {
-//                     // Crear una carpeta 'txts' si no existe
-//                     const txtFolderPath = path.join(__dirname, "../ArchivosGuardados");
-//                     if (!fs.existsSync(txtFolderPath)) {
-//                         fs.mkdirSync(txtFolderPath);
-//                     }
-
-//                     // Ruta donde se guardará el archivo .txt
-//                     let txtFilePath = path.join(txtFolderPath, "Carro.txt");
-//                     let i = 1;
-
-//                     let nombreArchivo = "Carro.txt";
-
-//                     // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-//                     while (fs.existsSync(txtFilePath)) {
-//                         txtFilePath = path.join(txtFolderPath, `Carro${i}.txt`);
-//                         nombreArchivo = `Carro${i}.txt`;
-//                         i++;
-//                     }
-
-//                     // Crear el contenido del archivo .txt
-//                     let fileContent = "Detalle de Carro\n\n";
-
-//                     // Agregar los carros al archivo .txt
-
-//                     fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
-
-
-//                     // Escribir el contenido en el archivo .txt
-//                     fs.writeFile(txtFilePath, fileContent, (err) => {
-//                         if (err) {
-//                             console.error("Error al guardar el archivo .txt:", err);
-//                         } else {
-//                             console.log("Archivo .txt guardado en:", txtFilePath);
-//                         }
-//                     });
-
-//                 }
-//             }
-
-
-//         } catch (error) {
-//             reject("Error en el proceso: " + error);
-//         }
-
-
-//     });
-
-// }
-
-
-
-
 /*************Subir al servidor ********* */
 const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
     // Ruta relativa al archivo
@@ -414,5 +283,57 @@ const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, 
 
 // }
 
+const obtenerBase64 = async (nombreArchivo) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
+            resolve(base64Data);
+        } catch (error) {
+            reject("Error al obtener el archivo en Base64: " + error);
+        }
 
-module.exports = { obtenerCarros, eliminarUnCarro, aniadirCarro, existeCarro, obtenerUnCarro, guardarArchivosCarros, guardarArchivoUnCarro, subirListaServidor }
+    })
+}
+
+const convertirBase64toFile = async (base64Data, nombreArchivo, extension) => {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!base64Data || !nombreArchivo || !extension) {
+                return reject("Base64, nombre de archivo o extensión no proporcionados.");
+            }
+
+            // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
+            const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
+            if (!fs.existsSync(folderPath)) {
+                fs.mkdirSync(folderPath);
+            }
+
+            // Ruta del archivo con nombre y extensión
+            let filePath = path.join(folderPath, `${nombreArchivo}.${extension}`);
+            let i = 1;
+
+            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+            while (fs.existsSync(filePath)) {
+                filePath = path.join(folderPath, `${nombreArchivo}${i}.${extension}`);
+                i++;
+            }
+
+            // Convertir base64 a buffer
+            const buffer = Buffer.from(base64Data, "base64");
+
+            // Escribir el archivo
+            fs.writeFile(filePath, buffer, (err) => {
+                if (err) return reject("Error al guardar el archivo: " + err);
+                console.log("Archivo guardado en:", filePath);
+                resolve(filePath);
+            });
+
+        } catch (error) {
+            reject("Error en el proceso: " + error);
+        }
+    });
+};
+
+
+
+module.exports = { obtenerCarros, eliminarUnCarro, aniadirCarro, existeCarro, obtenerUnCarro, guardarArchivosCarros, guardarArchivoUnCarro, subirListaServidor, obtenerBase64, convertirBase64toFile }

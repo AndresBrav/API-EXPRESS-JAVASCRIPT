@@ -1,6 +1,6 @@
 const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
-const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarArchivosCarros, guardarArchivoUnCarro, subirListaServidor } = require("../services/servicescarros");
+const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarArchivosCarros, guardarArchivoUnCarro, subirListaServidor, obtenerBase64,convertirBase64toFile } = require("../services/servicescarros");
 const User = require("../models/modeluser");
 const { flushPages } = require("pdfkit");
 
@@ -154,7 +154,7 @@ const CguardarUnArchivo = async (req, res) => {
             const base64Data = await guardarArchivoUnCarro(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
             res.json({
                 msg: "llegamos hasta aqui verifica que se haya subido el carro",
-                archivoB64:base64Data
+                archivoB64: base64Data
             })
         }
         else {
@@ -183,6 +183,38 @@ const CsubirServidor = async (req, res) => {
     })
 }
 
+
+const CdevolverArchivoBase64 = async (req, res) => {
+
+    try {
+        const { nombreArchivo } = req.body
+        const base64Data = await obtenerBase64(nombreArchivo);
+
+        res.json({
+            msg: "El codigo base64 se genero correctamente:",
+            base64: base64Data
+        })
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+}
+
+
+const CconvertirBase64toFile = async (req, res) => {
+    const {base64Data,nombreArchivo,extension} = req.body
+    //const {base64Data,nombreArchivo} = req.body
+    try {
+        await convertirBase64toFile(base64Data, nombreArchivo, extension);
+        //await convertirBase64toFile(base64Data, nombreArchivo);
+        res.json(
+            {msg: "El archivo se convirtio correctamente"}
+        )
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+}
+
 // const CsubirUnCarroServidor = async (req, res) => {
 //     const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
 
@@ -195,4 +227,4 @@ const CsubirServidor = async (req, res) => {
 
 
 
-module.exports = { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor };
+module.exports = { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64,CconvertirBase64toFile };
