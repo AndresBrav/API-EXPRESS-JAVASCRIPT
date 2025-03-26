@@ -1,6 +1,6 @@
 const { Request, Response } = require("express");
 const Carro = require("../models/modelcarro");
-const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarArchivosCarros,guardarArchivoUnCarro, subirListaServidor } = require("../services/servicescarros");
+const { obtenerCarros, obtenerUnCarro, eliminarUnCarro, aniadirCarro, existeCarro, guardarArchivosCarros, guardarArchivoUnCarro, subirListaServidor } = require("../services/servicescarros");
 const User = require("../models/modeluser");
 const { flushPages } = require("pdfkit");
 
@@ -103,57 +103,71 @@ const CactualizarCarro = async (req, res) => {
 };
 
 const CguardarArchivo = async (req, res) => {
-    const { body } = req;
-    const loginUsuario = req.usrT.u
-    const tipoGuardado = body.tipoGuardado
-    // console.log(body.TipoTransferencia);
-    // console.log(body.tipoGuardado);
-    await guardarArchivosCarros(body.TipoTransferencia, loginUsuario,tipoGuardado)  //guarda el pdf en la direccion 
-    //await subirListaServidor() //sube los archivos al servidor 
-    res.json({
-        msg: "llegamos hasta aqui se guardo los carros"
-    })
 
+    try {
+        const { body } = req;
+        const loginUsuario = req.usrT.u
+        const tipoGuardado = body.tipoGuardado
+
+        const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
+        //await subirListaServidor() //sube los archivos al servidor 
+        res.json({
+            msg: "llegamos hasta aqui se guardo los carros",
+            archivoB64: "El codigo base64 es:" + base64Data
+        })
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
 }
 
 const CguardarUnArchivo = async (req, res) => {
-    const { id } = req.params
-    const { TipoTransferencia,tipoGuardado } = req.body;
 
-    const loginUsuario = req.usrT.u //USER1
-    /********* Obtenemos el id del usuario****** */
-    const usuarioaux = await User.findOne({
-        where: { login: loginUsuario },
-        raw: true
-    })
+    try {
+        const { id } = req.params
+        const { TipoTransferencia, tipoGuardado } = req.body;
 
-    const listaDeCarrosDelUsuario = await Carro.findAll({
-        where: {
-            user_id: usuarioaux.id
-        },
-        raw: true
-    })
-    // console.log("...........................................");
-    // console.log(listaDeCarrosDelUsuario);
-
-    let idsCarros = [];
-    listaDeCarrosDelUsuario.forEach(carro => {
-        idsCarros.push(carro.id);
-    });
-
-    let existeValor = idsCarros.includes(Number(id));
-    
-    if(existeValor){
-        await guardarArchivoUnCarro(id, TipoTransferencia,tipoGuardado) //guarda el pdf de un carro en la direccion 
-        res.json({
-            msg: "llegamos hasta aqui verifica que se haya subido el carro"
+        const loginUsuario = req.usrT.u //USER1
+        /********* Obtenemos el id del usuario****** */
+        const usuarioaux = await User.findOne({
+            where: { login: loginUsuario },
+            raw: true
         })
-    }
-    else{
-        res.json({
-            msg: "El id del carro que ingresaste no pertenece al usuario que inicio sesion"
+
+        const listaDeCarrosDelUsuario = await Carro.findAll({
+            where: {
+                user_id: usuarioaux.id
+            },
+            raw: true
         })
+        // console.log("...........................................");
+        // console.log(listaDeCarrosDelUsuario);
+
+        let idsCarros = [];
+        listaDeCarrosDelUsuario.forEach(carro => {
+            idsCarros.push(carro.id);
+        });
+
+        let existeValor = idsCarros.includes(Number(id));
+
+        if (existeValor) {
+            const base64Data = await guardarArchivoUnCarro(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
+            res.json({
+                msg: "llegamos hasta aqui verifica que se haya subido el carro",
+                archivoB64:base64Data
+            })
+        }
+        else {
+            res.json({
+                msg: "El id del carro que ingresaste no pertenece al usuario que inicio sesion"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
     }
+
+
 
     // await guardarPdfUnCarro(id, TipoTransferencia) //guarda el pdf de un carro en la direccion 
 

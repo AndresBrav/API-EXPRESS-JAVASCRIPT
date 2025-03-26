@@ -5,6 +5,8 @@ const uploadFileToFTP = require('./basic-ftp') //metodo para subir al servidor
 const path = require('path');
 const User = require('../models/modeluser')
 
+const convertirYGuardarArchivoBase64 = require('./Convertir_B64')
+
 /************CRUD************ */
 const obtenerCarros = async (req, res) => {
     const loginUsuario = req.usrT.u
@@ -89,216 +91,284 @@ const obtenerUnCarro = async (req, res) => {
 
 /***********Seccion de pdf**************/
 
-const guardarArchivosCarros = async (TipoTransferencia, loginUsuario, tipoGuardado) => {
-    const TipoTferencia = TipoTransferencia;
-
-    // Obtener el ID del usuario a partir de su nombre
-    const usuario = await User.findOne({ where: { login: loginUsuario } });
-    const idUsuario = usuario.id;
-    console.log("el id del usuario es " + idUsuario);
-
-    // Obtener los carros asociados a ese usuario
-    const carros = await Carro.findAll({ where: { user_id: idUsuario } });
-    const listaCarros = carros;
-
-    if (tipoGuardado === "txt") {
-        // Crear una carpeta 'txts' si no existe
-        const txtFolderPath = path.join(__dirname, "../ArchivosGuardados");
-        if (!fs.existsSync(txtFolderPath)) {
-            fs.mkdirSync(txtFolderPath);
-        }
-
-        // Ruta donde se guardará el archivo .txt
-        let txtFilePath = path.join(txtFolderPath, "lista_carros.txt");
-        let i = 1;
-
-        let nombreArchivo = "lista_carros.txt";
-
-        // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-        while (fs.existsSync(txtFilePath)) {
-            txtFilePath = path.join(txtFolderPath, `lista_carros${i}.txt`);
-            nombreArchivo = `lista_carros${i}.txt`;
-            i++;
-        }
-
-        // Crear el contenido del archivo .txt
-        let fileContent = "Lista de Carros\n\n";
-
-        // Agregar los carros al archivo .txt
-        listaCarros.forEach((carro, index) => {
-            fileContent += `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
-        });
-
-        // Escribir el contenido en el archivo .txt
-        fs.writeFile(txtFilePath, fileContent, (err) => {
-            if (err) {
-                console.error("Error al guardar el archivo .txt:", err);
-            } else {
-                console.log("Archivo .txt guardado en:", txtFilePath);
-            }
-        });
-    }
-    else {
-        if (tipoGuardado === "pdf") {
-            //Crear una carpeta 'pdfs' si no existe
-            const pdfFolderPath = path.join(__dirname, "../ArchivosGuardados");
-            if (!fs.existsSync(pdfFolderPath)) {
-                fs.mkdirSync(pdfFolderPath);
-            }
-
-            // Ruta donde se guardará el PDF
-            let pdfFilePath = path.join(pdfFolderPath, "lista_carros.pdf");
-            let i = 1;
-
-            let nombreArchivo = "lista_carros.pdf";
-
-            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-            while (fs.existsSync(pdfFilePath)) {
-                pdfFilePath = path.join(pdfFolderPath, `lista_carros${i}.pdf`);
-                nombreArchivo = `lista_carros${i}.pdf`
-                i++;
-            }
-
-            // Crear un nuevo documento PDF
-            const doc = new PDFDocument();
-            const writeStream = fs.createWriteStream(pdfFilePath);
-            doc.pipe(writeStream);
-
-            // Título del documento
-            doc.fontSize(20).text("Lista de Carros", { align: "center" });
-            doc.moveDown();
-
-            // Agregar los carros al PDF
-            listaCarros.forEach((carro, index) => {
-                doc.fontSize(14).text(`${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`);
-                doc.moveDown(0.5);
-            });
-
-            // Finalizar el documento
-            doc.end();
-
-            // Esperar a que termine de escribir el archivo
-            writeStream.on("finish", () => {
-                console.log("PDF guardado en:", pdfFilePath);
-            });
-
-            writeStream.on("error", (err) => {
-                console.error("Error al guardar el PDF:", err);
-            });
-        }
-    }
-
-};
-
-///guarda el pdf en la carpeta ../pdfs/Carro.pdf
-///guarda el pdf en la carpeta ../pdfs/Carro.pdf
-const guardarArchivoUnCarro = async (id, TipoTransferencia, tipoGuardado) => {
-    console.log("el tipo de guardado es: " + tipoGuardado);
-    const carro = await Carro.findByPk(id);
-    const existe = await existeCarro(id)
-    //console.log(`el carro existe ? ${existe}`);
-
-    if (tipoGuardado === "pdf") {
+const guardarArchivosCarros = async (loginUsuario, tipoGuardado) => {
+    return new Promise(async (resolve, reject) => {
         try {
-            if (existe) {
-                // Crear una carpeta 'pdfs' si no existe
-                const pdfFolderPath = path.join(__dirname, "../ArchivosGuardados");
-                if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
-                    fs.mkdirSync(pdfFolderPath); //creamos la carpeta
-                }
+            const usuario = await User.findOne({ where: { login: loginUsuario } });
+            if (!usuario) return reject("Usuario no encontrado");
 
-                // Ruta donde se guardará el PDF
-                let pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
+            const idUsuario = usuario.id;
+            console.log("El ID del usuario es " + idUsuario);
+
+            const carros = await Carro.findAll({ where: { user_id: idUsuario } });
+            if (!carros.length) return reject("No se encontraron carros para el usuario");
+
+            let nombreDelArchivo = "";
+            const folderPath = path.join(__dirname, "../ArchivosGuardados");
+            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+
+            if (tipoGuardado === "txt") {
+                let filePath = path.join(folderPath, "lista_carros.txt");
                 let i = 1;
-
-                let nombreArchivo = "Carro.pdf";
-
-                // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-                while (fs.existsSync(pdfFilePath)) {
-                    pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
-                    nombreArchivo = `Carro${i}.pdf`
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `lista_carros${i}.txt`);
                     i++;
                 }
+                nombreDelArchivo = path.basename(filePath);
 
-                // Crear un nuevo documento PDF
+                const fileContent = carros.map((carro, index) =>
+                    `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
+                ).join("\n");
+
+                fs.writeFile(filePath, fileContent, async (err) => {
+                    if (err) return reject("Error al guardar el archivo TXT: " + err);
+                    console.log("Archivo TXT guardado en:", filePath);
+
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64);
+                });
+
+            } else if (tipoGuardado === "pdf") {
+                let filePath = path.join(folderPath, "lista_carros.pdf");
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `lista_carros${i}.pdf`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
                 const doc = new PDFDocument();
-                const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
-                doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
+                const writeStream = fs.createWriteStream(filePath);
+                doc.pipe(writeStream);
 
-                // Título del documento
-                doc.fontSize(20).text("Detalles del Carro", { align: "center" });
-                doc.moveDown(); //agrega un pequeño espacio
+                doc.fontSize(20).text("Lista de Carros", { align: "center" }).moveDown();
+                carros.forEach((carro, index) => {
+                    doc.fontSize(14).text(`${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`);
+                    doc.moveDown(0.5);
+                });
+
+                doc.end();
+
+                writeStream.on("finish", async () => {
+                    console.log("PDF guardado en:", filePath);
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64);
+                });
+
+                writeStream.on("error", (err) => reject("Error al guardar el PDF: " + err));
+            } else {
+                reject("Tipo de guardado no soportado.");
+            }
+        } catch (error) {
+            reject("Error en el proceso: " + error);
+        }
+
+    }
+    );
+};
+
+const guardarArchivoUnCarro = async (id, tipoGuardado) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("el tipo de guardado es: " + tipoGuardado);
+            const carro = await Carro.findByPk(id);
+            const existe = await existeCarro(id)
+
+            let nombreDelArchivo = "";
+            const folderPath = path.join(__dirname, "../ArchivosGuardados");
+            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+
+            if (tipoGuardado === "txt" && existe) {
+                let filePath = path.join(folderPath, "Carro.txt");
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `Carro${i}.txt`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                // Crear el contenido del archivo .txt
+                let fileContent = "Detalle de Carro\n\n";
+
+                // Agregar los carros al archivo .txt
+
+                fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
+
+                fs.writeFile(filePath, fileContent, async (err) => {
+                    if (err) return reject("Error al guardar el archivo TXT: " + err);
+                    console.log("Archivo TXT guardado en:", filePath);
+
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64);
+                });
+
+            } else if (tipoGuardado === "pdf" && existe) {
+                let filePath = path.join(folderPath, "Carro.pdf");
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `Carro${i}.pdf`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                const doc = new PDFDocument();
+                const writeStream = fs.createWriteStream(filePath);
+                doc.pipe(writeStream);
+
+                doc.fontSize(20).text("Detalles del Carro", { align: "center" }).moveDown();
 
                 //agregar carro al pdf
                 doc.fontSize(14).text(`ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`)
 
 
-                // Finalizar el documento
                 doc.end();
 
-                // Esperar a que termine de escribir el archivo
-                writeStream.on("finish", () => {
-                    console.log("PDF guardado en:", pdfFilePath);
+                writeStream.on("finish", async () => {
+                    console.log("PDF guardado en:", filePath);
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64);
                 });
 
-                writeStream.on("error", (err) => {
-                    console.error("Error al guardar el PDF:", err);
-                });
-
-
+                writeStream.on("error", (err) => reject("Error al guardar el PDF: " + err));
+            } else {
+                reject("Tipo de guardado no soportado.");
             }
-            else {
-                console.log("el carro que estas buscando no existe");
-            }
+        } catch (error) {
+            reject("Error en el proceso: " + error);
         }
-        catch (error) {
-            console.log(error);
-            //res.end();
-        }
+
     }
-    else {
-        if (tipoGuardado === "txt") {
-            // Crear una carpeta 'txts' si no existe
-            const txtFolderPath = path.join(__dirname, "../ArchivosGuardados");
-            if (!fs.existsSync(txtFolderPath)) {
-                fs.mkdirSync(txtFolderPath);
-            }
-
-            // Ruta donde se guardará el archivo .txt
-            let txtFilePath = path.join(txtFolderPath, "Carro.txt");
-            let i = 1;
-
-            let nombreArchivo = "Carro.txt";
-
-            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-            while (fs.existsSync(txtFilePath)) {
-                txtFilePath = path.join(txtFolderPath, `Carro${i}.txt`);
-                nombreArchivo = `Carro${i}.txt`;
-                i++;
-            }
-
-            // Crear el contenido del archivo .txt
-            let fileContent = "Detalle de Carro\n\n";
-
-            // Agregar los carros al archivo .txt
-
-            fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
+    );
+};
 
 
-            // Escribir el contenido en el archivo .txt
-            fs.writeFile(txtFilePath, fileContent, (err) => {
-                if (err) {
-                    console.error("Error al guardar el archivo .txt:", err);
-                } else {
-                    console.log("Archivo .txt guardado en:", txtFilePath);
-                }
-            });
-
-        }
-    }
 
 
-}
+
+// const guardarArchivoUnCarro = async (id, TipoTransferencia, tipoGuardado) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             console.log("el tipo de guardado es: " + tipoGuardado);
+//             const carro = await Carro.findByPk(id);
+//             const existe = await existeCarro(id)
+//             //console.log(`el carro existe ? ${existe}`);
+
+//             if (tipoGuardado === "pdf") {
+//                 try {
+
+//                     let nombreDelArchivo = "";
+
+//                     if (existe) {
+//                         // Crear una carpeta 'pdfs' si no existe
+//                         const pdfFolderPath = path.join(__dirname, "../ArchivosGuardados");
+//                         if (!fs.existsSync(pdfFolderPath)) { //verificamos si la carpeta existe
+//                             fs.mkdirSync(pdfFolderPath); //creamos la carpeta
+//                         }
+
+//                         // Ruta donde se guardará el PDF
+//                         let pdfFilePath = path.join(pdfFolderPath, "Carro.pdf");
+//                         let i = 1;
+
+//                         let nombreArchivo = "Carro.pdf";
+
+//                         // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+//                         while (fs.existsSync(pdfFilePath)) {
+//                             pdfFilePath = path.join(pdfFolderPath, `Carro${i}.pdf`); //aumentaremos un indice si ya existe
+//                             nombreArchivo = `Carro${i}.pdf`
+//                             i++;
+//                         }
+
+//                         // Crear un nuevo documento PDF
+//                         const doc = new PDFDocument();
+//                         const writeStream = fs.createWriteStream(pdfFilePath); //crea un flujo de escritura 
+//                         doc.pipe(writeStream); //Conecta el documento PDF al flujo de escritura
+
+//                         // Título del documento
+//                         doc.fontSize(20).text("Detalles del Carro", { align: "center" });
+//                         doc.moveDown(); //agrega un pequeño espacio
+
+//                         //agregar carro al pdf
+//                         doc.fontSize(14).text(`ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`)
+
+
+//                         // Finalizar el documento
+//                         doc.end();
+
+
+//                         // Esperar a que termine de escribir el archivo
+//                         writeStream.on("finish", async() => {
+//                             console.log("PDF guardado en:", pdfFilePath);
+//                             nombreDelArchivo = nombreArchivo;
+//                             const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+//                             console.log("el nombre del archivo es: " + nombreDelArchivo);
+//                             resolve(variableBase64);
+//                         });
+
+//                         writeStream.on("error", (err) => {
+//                             console.error("Error al guardar el PDF:", err);
+//                         });
+
+
+//                     }
+//                     else {
+//                         console.log("el carro que estas buscando no existe");
+//                     }
+//                 }
+//                 catch (error) {
+//                     console.log(error);
+//                     //res.end();
+//                 }
+//             }
+//             else {
+//                 if (tipoGuardado === "txt") {
+//                     // Crear una carpeta 'txts' si no existe
+//                     const txtFolderPath = path.join(__dirname, "../ArchivosGuardados");
+//                     if (!fs.existsSync(txtFolderPath)) {
+//                         fs.mkdirSync(txtFolderPath);
+//                     }
+
+//                     // Ruta donde se guardará el archivo .txt
+//                     let txtFilePath = path.join(txtFolderPath, "Carro.txt");
+//                     let i = 1;
+
+//                     let nombreArchivo = "Carro.txt";
+
+//                     // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+//                     while (fs.existsSync(txtFilePath)) {
+//                         txtFilePath = path.join(txtFolderPath, `Carro${i}.txt`);
+//                         nombreArchivo = `Carro${i}.txt`;
+//                         i++;
+//                     }
+
+//                     // Crear el contenido del archivo .txt
+//                     let fileContent = "Detalle de Carro\n\n";
+
+//                     // Agregar los carros al archivo .txt
+
+//                     fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
+
+
+//                     // Escribir el contenido en el archivo .txt
+//                     fs.writeFile(txtFilePath, fileContent, (err) => {
+//                         if (err) {
+//                             console.error("Error al guardar el archivo .txt:", err);
+//                         } else {
+//                             console.log("Archivo .txt guardado en:", txtFilePath);
+//                         }
+//                     });
+
+//                 }
+//             }
+
+
+//         } catch (error) {
+//             reject("Error en el proceso: " + error);
+//         }
+
+
+//     });
+
+// }
 
 
 
