@@ -35,15 +35,44 @@ const existeCarro = async (id) => {
 
 
 const eliminarUnCarro = async (req, res) => {
-    const { id } = req.params;
-    const carro = await Carro.findByPk(id);
-    if (carro) {
-        await carro.destroy();
-    }
-    res.json({
-        msg: `Se eliminó el carro con ID ${id}`
+
+    const loginusuario = req.usrT.u  //con el que inicio sesion
+    // const { body } = req.body;
+    const idUsuario = await User.findOne({
+        where: { login: loginusuario },
+        attributes: ["id"],
+        raw: true  // <- Esto hace que devuelva un objeto simple 
     });
+
+    // Extraer solo el ID
+    const userId = idUsuario ? idUsuario.id : null;
+
+    console.log("el id del usuario es " + userId);
+
+
+
+    const user_ids = await Carro.findAll({
+        where: { user_id: userId },
+        raw: true
+    });
+
+    console.log("el id de los usuarios es.......");
+    console.log(user_ids);
+
+    const userIdArray = user_ids.map(user => user.id);
+    console.log(userIdArray);
+    res.end();
+
+    // const { id } = req.params;
+    // const carro = await Carro.findByPk(id);
+    // if (carro) {
+    //     await carro.destroy();
+    // }
+    // res.json({
+    //     msg: `Se eliminó el carro con ID ${id}`
+    // });
 }
+
 
 const aniadirCarro = async (req, res) => {
 
