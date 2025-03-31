@@ -125,7 +125,7 @@ const CguardarUnArchivo = async (req, res) => {
 
     try {
         const { id } = req.params
-        const { TipoTransferencia, tipoGuardado } = req.body;
+        const {  tipoGuardado } = req.body;
 
         const loginUsuario = req.usrT.u //USER1
         /********* Obtenemos el id del usuario****** */

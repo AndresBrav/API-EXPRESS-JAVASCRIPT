@@ -1,3 +1,0 @@
-Detalle de Carro
-
- ID: 14 - Nombre: Audi - Descripcion: auto para ver la base 64 - Precio: 20000 - Stock: 15000
