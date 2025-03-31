@@ -61,7 +61,25 @@ const eliminarUnCarro = async (req, res) => {
 
     const userIdArray = user_ids.map(user => user.id);
     console.log(userIdArray);
-    res.end();
+    // res.end();
+    const { id } = req.params;
+
+    let pertenece = userIdArray.includes(Number(id));
+    // console.log(pertenece)
+    if (pertenece) {
+        const carro = await Carro.findByPk(id);
+        await carro.destroy();
+        res.json({
+            msg: `Se eliminó el carro con ID ${id}`
+        });
+    }
+    else{
+        res.json({
+            msg: `El carro con ${id} no pertenece al usuario`
+        });
+    }
+
+
 
     // const { id } = req.params;
     // const carro = await Carro.findByPk(id);

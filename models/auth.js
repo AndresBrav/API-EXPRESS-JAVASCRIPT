@@ -12,7 +12,7 @@ try {
   // Verifica si el archivo JSON existe antes de leerlo
   if (fs.existsSync("Usuarios.json")) {
     usersDB = JSON.parse(fs.readFileSync("Usuarios.json", "utf-8"));
-    console.log("El archivo JSON tiene:", usersDB);
+    //console.log("El archivo JSON tiene:", usersDB);
 
     // Encriptar las contraseñas si no están encriptadas
     // let updated = false;
